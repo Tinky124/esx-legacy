@@ -196,21 +196,13 @@ ESX.SavePlayer = function(xPlayer, cb)
 end
 
 ESX.SavePlayers = function(cb)
-	local xPlayers, asyncTasks = ESX.GetPlayers(), {}
-
-	for i=1, #xPlayers, 1 do
-		table.insert(asyncTasks, function(cb2)
-			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			ESX.SavePlayer(xPlayer, cb2)
-		end)
+	local xPlayers = ESX.GetExtendedPlayers()
+	if #xPlayers > 0 then
+		for _, xPlayer in pairs(xPlayers) do
+		if xPlayer then ESX.SavePlayer(xPlayer) end end
+		print(('[ESX] [^2INFO^7] Saved %s player(s)'):format(#xPlayers))
+		if cb then cb() end
 	end
-
-	Async.parallelLimit(asyncTasks, 8, function(results)
-		print(('[^2INFO^7] Saved ^5%s^0 player(s)'):format(#xPlayers))
-		if cb then
-			cb()
-		end
-	end)
 end
 
 ESX.StartDBSync = function()
