@@ -63,8 +63,18 @@ AddEventHandler('esx:playerLoaded', function(xPlayer, isNew, skin)
 			local DisablePlayerVehicleRewards = DisablePlayerVehicleRewards
 			local RemoveAllPickupsOfType = RemoveAllPickupsOfType
 			local HideHudComponentThisFrame = HideHudComponentThisFrame
+			local SetPedDropsWeaponsWhenDead = SetPedDropsWeaponsWhenDead
 			local PlayerId = PlayerId()
 			local DisabledComps = {}
+			if Config.DisableNPCDrops then
+				AddEventHandler('gameEventTriggered', function(name, args)
+    				if name == 'CEventNetworkEntityDamage' then
+        				if args[6] == 1 then
+            				SetPedDropsWeaponsWhenDead(args[1], false)
+        				end
+    				end
+				end)
+			end
 			for i=1, #(Config.RemoveHudCommonents) do
 				if Config.RemoveHudCommonents[i] then
 					DisabledComps[#DisabledComps + 1] = i
@@ -96,13 +106,6 @@ AddEventHandler('esx:playerLoaded', function(xPlayer, isNew, skin)
 					DisablePlayerVehicleRewards(PlayerId)
 				end
 			
-				if Config.DisableNPCDrops then
-					Sleep = false
-					RemoveAllPickupsOfType(0xDF711959) -- carbine rifle
-					RemoveAllPickupsOfType(0xF9AFB48F) -- pistol
-					RemoveAllPickupsOfType(0xA9355DCD) -- pumpshotgun
-				end
-
 				if #DisabledComps > 0 then
 					Sleep = false
 					for i=1, #(DisabledComps) do
